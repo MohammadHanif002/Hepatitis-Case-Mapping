@@ -1,3 +1,5 @@
+@props(['title' => ''])
+
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">
 
@@ -26,13 +28,18 @@
         <x-header> {{ $title }}</x-header>
 
         <main>
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                {{ $slot }}
-            </div>
+            @if (!empty($slot_full_width))
+                {{ $slot_full_width }}
+            @else
+                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    {{ $slot }}
+                </div>
+            @endif
         </main>
     </div>
 
     @stack('scripts')
+
 </body>
 
 </html>

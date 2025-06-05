@@ -39,6 +39,8 @@ class MapController extends Controller
             ];
         }
 
-        return response()->json($geojson);
+        return response()->json($geojson, 200, [
+            'Content-Type' => 'application/json'
+        ], JSON_PRETTY_PRINT);
     }
 }
