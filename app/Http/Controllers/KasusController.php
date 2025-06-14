@@ -10,8 +10,10 @@ class KasusController extends Controller
 {
     public function index()
     {
+        // Menampilkan seluruh data kasus dari database 
         $dataKasus = Kasus::all();
 
+        // Mengirim data ke view dataKasus.blade.php
         return view('dataKasus', [
             'title' => 'Data Kasus Hepatitis A Jember',
             'dataKasus' => $dataKasus
@@ -31,6 +33,7 @@ class KasusController extends Controller
         $labels = $data->pluck('kecamatan');
         $values = $data->pluck('total_kasus');
 
+        // Kirim ke view untuk ditampilkan dalam bentuk grafik 
         return view('grafikKasus', [
             'labels' => $labels,
             'values' => $values
@@ -39,6 +42,7 @@ class KasusController extends Controller
 
     public function home()
     {
+        // Ambil semua data dari tabel Kasus
         $dataKasus = Kasus::all();
 
         // Hitung total kasus
@@ -55,6 +59,7 @@ class KasusController extends Controller
         $zonaKuning = $dataKasus->whereBetween('jumlah_kasus', [5, 9])->count();
         $zonaHijau = $dataKasus->where('jumlah_kasus', '<', 5)->count();
 
+        // Kirim ke view home untuk ditampilkan berdasarkan klasifikasi 
         return view('home', compact(
             'totalKasus',
             'jumlahKecamatan',
@@ -66,15 +71,47 @@ class KasusController extends Controller
 
     public function searchKasus(Request $request)
     {
+        // Mencari data berdasarkan nama kecamatan 
         $query = $request->input('q');
 
+        // Akses tabel jember langsung dan cari kecamatan yang mengandung kata dari Input (Like %query%)
         $results = DB::table('jember')
             ->where('kecamatan', 'LIKE', '%' . $query . '%')
             ->get();
 
+        // Kirm hasil pencraian ke view hasilSearch
         return view('hasilSearch', compact('results', 'query'));
     }
 
+    public function exportCSV()
+    {
+        $kasus = \App\Models\Kasus::all();
 
+        $filename = 'data_kasus_jember.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ];
+
+        $callback = function () use ($kasus) {
+            $file = fopen('php://output', 'w');
+            // Baris header
+            fputcsv($file, ['ID', 'Kecamatan', 'Jumlah Kasus', 'Tahun']);
+
+            // Baris data
+            foreach ($kasus as $row) {
+                fputcsv($file, [
+                    $row->gid,
+                    $row->kecamatan,
+                    $row->jumlah_kasus,
+                    $row->tahun
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 
 }

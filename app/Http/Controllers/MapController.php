@@ -20,7 +20,7 @@ class MapController extends Controller
             ")
             ->get();
 
-        // Buat struktur GeoJSON
+        // Mengambil data spasial dari database PostgreSQL (dengan ST_AsGeoJSON).
         $geojson = [
             'type' => 'FeatureCollection',
             'features' => []
@@ -38,7 +38,8 @@ class MapController extends Controller
                 ]
             ];
         }
-
+        
+        // 3. Mengirimkan kembali sebagai respons JSON
         return response()->json($geojson, 200, [
             'Content-Type' => 'application/json'
         ], JSON_PRETTY_PRINT);
