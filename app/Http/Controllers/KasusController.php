@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kasus;
 use Illuminate\Http\Request;
+use App\Entities\KasusEntity;
 use Illuminate\Support\Facades\DB;
 
 class KasusController extends Controller
@@ -23,7 +24,7 @@ class KasusController extends Controller
     public function grafik()
     {
         // Ambil data jumlah kasus per kecamatan
-        $data = \App\Models\Kasus::select('kecamatan')
+        $data = Kasus::select('kecamatan')
             ->selectRaw('SUM(jumlah_kasus) as total_kasus')
             ->groupBy('kecamatan')
             ->orderBy('kecamatan')
@@ -42,22 +43,31 @@ class KasusController extends Controller
 
     public function home()
     {
-        // Ambil semua data dari tabel Kasus
-        $dataKasus = Kasus::all();
+        $kasusRaw = Kasus::all();
+
+        $dataKasus = [];
+
+        foreach ($kasusRaw as $row) {
+            $dataKasus[] = new KasusEntity(
+                $row->kecamatan ?? 'Tidak diketahui',
+                (int) ($row->jumlah_kasus ?? 0),
+                (int) ($row->tahun ?? date('Y')) // default ke tahun sekarang kalau null
+            );
+        }
 
         // Hitung total kasus
-        $totalKasus = $dataKasus->sum('jumlah_kasus');
+        $totalKasus = array_reduce($dataKasus, fn($carry, $item) => $carry + $item->getJumlahKasus(), 0);
 
-        // Kecamatan yang masuk zona kuning/merah (>=5 kasus)
-        $jumlahKecamatan = $dataKasus
-            ->where('jumlah_kasus', '>=', 5)
-            ->groupBy('kecamatan')
-            ->count();
+        // Jumlah kecamatan dengan kasus >= 5
+        $jumlahKecamatan = count(array_unique(array_map(
+            fn($item) => $item->getKecamatan(),
+            array_filter($dataKasus, fn($item) => $item->getJumlahKasus() >= 5)
+        )));
 
-        // Hitung jumlah zona
-        $zonaMerah = $dataKasus->where('jumlah_kasus', '>=', 10)->count();
-        $zonaKuning = $dataKasus->whereBetween('jumlah_kasus', [5, 9])->count();
-        $zonaHijau = $dataKasus->where('jumlah_kasus', '<', 5)->count();
+        // Zona klasifikasi
+        $zonaMerah = count(array_filter($dataKasus, fn($k) => $k->getZona() === 'Merah'));
+        $zonaKuning = count(array_filter($dataKasus, fn($k) => $k->getZona() === 'Kuning'));
+        $zonaHijau = count(array_filter($dataKasus, fn($k) => $k->getZona() === 'Hijau'));
 
         // Kirim ke view home untuk ditampilkan berdasarkan klasifikasi 
         return view('home', compact(
@@ -85,7 +95,7 @@ class KasusController extends Controller
 
     public function exportCSV()
     {
-        $kasus = \App\Models\Kasus::all();
+        $kasus = Kasus::all();
 
         $filename = 'data_kasus_jember.csv';
         $headers = [
