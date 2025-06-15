@@ -168,9 +168,9 @@
                         const item = document.createElement('div');
                         item.className = 'legend-item';
                         item.innerHTML = `
-        <i style="background:${warnaZona}; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i>
-        ${nama} (${jumlah ?? 0} kasus)
-    `;
+                    <i style="background:${warnaZona}; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i>
+                    ${nama} (${jumlah ?? 0} kasus)
+                `;
                         item.style.cursor = 'pointer';
 
                         item.onclick = () => {
@@ -200,11 +200,14 @@
                             onEachFeature: function(feature, layer) {
                                 const p = feature.properties;
                                 const popup = `
-                    <strong>ID:</strong> ${p.id}<br>
-                    <strong>Kecamatan:</strong> ${p.kecamatan}<br>
-                    <strong>Jumlah Kasus:</strong> ${p.jumlah_kasus ?? 'Tidak ada data'}<br>
-                    <strong>Tahun:</strong> ${p.tahun ?? '-'}
-                `;
+                                <strong>ID:</strong> ${p.id}<br>
+                                <strong>Kecamatan:</strong> ${p.kecamatan}<br>
+                                <strong>Jumlah Kasus:</strong> ${p.jumlah_kasus ?? 'Tidak ada data'}<br>
+                                <strong>Tahun:</strong> ${p.tahun ?? '-'}<br>
+                                <strong>Jumlah Penduduk:</strong> ${p.jumlah_penduduk ?? '-'} jiwa<br>
+                                <strong>Luas Wilayah:</strong> ${p.luas_km2 ?? '-'} km²<br>
+                                <strong>Kepadatan:</strong> ${p.kepadatan ?? '-'} jiwa/km²
+                            `;
                                 layer.bindPopup(popup);
 
                                 layer.bindTooltip(p.kecamatan, {
