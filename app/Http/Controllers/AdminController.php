@@ -22,7 +22,7 @@ class AdminController extends Controller
         if ($redirect = $this->checkLogin())
             return $redirect;
 
-        $data = DB::table('jember')->get();
+        $data = DB::table('wilayah')->get();
         return view('adminDashboard', compact('data'));
     }
 
@@ -31,7 +31,7 @@ class AdminController extends Controller
         if ($redirect = $this->checkLogin())
             return $redirect;
 
-        $row = DB::table('jember')->where('gid', $id)->first();
+        $row = DB::table('wilayah')->where('gid', $id)->first();
         return view('adminEdit', compact('row'));
     }
 
@@ -40,7 +40,7 @@ class AdminController extends Controller
         if ($redirect = $this->checkLogin())
             return $redirect;
 
-        DB::table('jember')->where('gid', $id)->update([
+        DB::table('wilayah')->where('gid', $id)->update([
             'kecamatan' => $request->kecamatan,
             'jumlah_kasus' => $request->jumlah_kasus,
             'tahun' => $request->tahun
@@ -53,7 +53,7 @@ class AdminController extends Controller
         if ($redirect = $this->checkLogin())
             return $redirect;
 
-        DB::table('jember')->where('gid', $id)->delete();
+        DB::table('wilayah')->where('gid', $id)->delete();
         return redirect()->route('admin.dashboard');
     }
 
@@ -70,7 +70,7 @@ class AdminController extends Controller
         if ($redirect = $this->checkLogin())
             return $redirect;
 
-        DB::table('jember')->insert([
+        DB::table('wilayah')->insert([
             'kecamatan' => $request->kecamatan,
             'jumlah_kasus' => $request->jumlah_kasus,
             'tahun' => $request->tahun

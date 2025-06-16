@@ -85,7 +85,7 @@ class KasusController extends Controller
         $query = $request->input('q');
 
         // Akses tabel jember langsung dan cari kecamatan yang mengandung kata dari Input (Like %query%)
-        $results = DB::table('jember')
+        $results = DB::table('wilayah')
             ->where('kecamatan', 'LIKE', '%' . $query . '%')
             ->get();
 

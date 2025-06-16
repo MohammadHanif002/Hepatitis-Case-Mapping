@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Kasus extends Model
 {
     // Nama tabel di database
-    protected $table = 'jember'; // Pastikan ini nama tabel kamu
+    protected $table = 'wilayah'; // Pastikan ini nama tabel kamu
 
     // Jika tabel tidak punya kolom created_at dan updated_at
     public $timestamps = false;

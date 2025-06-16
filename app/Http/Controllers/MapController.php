@@ -10,14 +10,14 @@ class MapController extends Controller
     public function geojson()
     {
         // Ambil data dari PostgreSQL, konversi kolom geom menjadi GeoJSON
-        $features = DB::table('jember')
-            ->leftJoin('demografi', 'jember.gid', '=', 'demografi.gid')
+        $features = DB::table('wilayah')
+            ->leftJoin('demografi', 'wilayah.gid', '=', 'demografi.gid')
             ->selectRaw("
-            jember.gid,
-            jember.kecamatan,
-            jember.jumlah_kasus,
-            jember.tahun,
-            ST_AsGeoJSON(jember.geom) AS geometry,
+            wilayah.gid,
+            wilayah.kecamatan,
+            wilayah.jumlah_kasus,
+            wilayah.tahun,
+            ST_AsGeoJSON(wilayah.geom) AS geometry,
             demografi.jmlh_pnddk,
             demografi.kepadatan,
             demografi.luas_km2
